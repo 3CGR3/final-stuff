@@ -216,20 +216,8 @@ const quotes =
 
 ];
 
-//when enter key is pressed submit the input
-function detectEnter(e){
-  var code = (e.keyCode ? e.keyCode : e.which);
-  if (code == 13){
-    search();
-  }
-}
-
-//clears the all quotes that are displayed
-function clearBox(mainQuotes)
-{
-    document.getElementById(mainQuotes).innerHTML = "";
-}
-
+var likeBtn = null;
+var randQuotesList = [];
 //random 20 quotes in the home page are displayed
 function home(){
   clearBox("output")
@@ -243,16 +231,37 @@ function home(){
 
     //displaying the selected quotes
     var randQuotesp = document.createElement("p");
-    var fullQuote = randomValue["quote"] + " -" + randomValue["author"] + ", " + randomValue["book"];
+
+    var fullQuote =  randomValue["quote"] + " -" + randomValue["author"] + ", " + randomValue["book"] + "   " ;
     var textnode = document.createTextNode(fullQuote)
-    randQuotesp.appendChild(textnode)
-    document.getElementById("mainQuotes").appendChild(randQuotesp)
+    likeBtn = document.createElement("button");
+    likeBtn.id = "likeButton";
+    var likeBtnTxt = document.createTextNode("♡");
+    likeBtn.className = "emptyHeart";
+    likeBtn.appendChild(likeBtnTxt);
+    randQuotesp.appendChild(textnode);
+    randQuotesp.appendChild(likeBtn);
+    document.getElementById("mainQuotes").appendChild(randQuotesp);
+    //changes empty heart to solid heart when clicked
+    likeBtn.onclick =  function (){
+       // console.log(likeBtn.innerHTML)
+        if (this.innerHTML == "♡"){
+           this.innerHTML = "❤️";
+           this.className = "solidHeart"
+           this.classList.add("likedQuotes")
+         }
+        else{ this.innerHTML = "♡";
+        this.className = "emptyHeart"
+        this.classList.remove("likedQuotes")
+
+        // liked(likeBtn);
+      }
+    }
   }
 
 }
-
 //searching and displaying the quotes
-function search(){
+function search(node){
   var input = document.getElementById("input").value.toLowerCase()
   //if input is not empty
   if (input !== '') {
@@ -280,17 +289,80 @@ function search(){
     //displaying the matched quotes
      for (index in searched){
        var node = document.createElement("p");
-       var fullQuote = searched[index]["quote"] + " -" + searched[index]["author"] + ", " + searched[index]["book"];
+       var fullQuote = searched[index]["quote"] + " -" + searched[index]["author"] + ", " + searched[index]["book"] + "   ";
        var textnode = document.createTextNode(fullQuote);
+       //create and display like button
+       var likeBtn = document.createElement("button");
+       likeBtn.id = "likeButton";
+       var likeBtnTxt = document.createTextNode("♡");
+       likeBtn.className = "emptyHeart";
+       likeBtn.appendChild(likeBtnTxt);
        node.appendChild(textnode);
+       node.appendChild(likeBtn);
        document.getElementById("output").appendChild(node);
+       //when like button clicked change the heart
+       likeBtn.onclick =  function (){
+          console.log(likeBtn.innerHTML)
+           if (this.innerHTML == "♡"){
+              this.innerHTML = "❤️  ";
+              this.className = "solidHeart"
+              this.classList.add("likedQuotes")
+            }
+           else{ this.innerHTML = "♡";
+           this.className = "emptyHeart"
+           this.classList.remove("likedQuotes")
+         }
+       }
+    }
+    //clear the input field
+     // document.getElementById("input").value = "";
      }
-     document.getElementById("input").value = "";
-  }
   //if input is empty
   else{
-    clearBox("mainQuotes")
+    clearBox("mainQuotes");
     home();
-    alert("Please type something")
+    alert("Please type something");
   }
+}
+//decide which page to remove quotes from
+function liked(){
+  if(document.getElementById("input").value.toLowerCase() == ''){
+    keepLiked("mainQuotes");
+  }
+  else{
+    keepLiked("output");
+  }
+}
+//when liked button clicked removes the not liked quotes
+function keepLiked(idName){
+  var maindiv = document.getElementById(idName)
+  var plist = maindiv.getElementsByTagName("p")
+  console.log(plist.length)
+  var index = 0;
+  var length = plist.length
+  for(var i = 0; i < length; i++){
+    var pelem = plist[index]
+      console.log(pelem.childNodes[1])
+    if(pelem.childNodes[1].className === "emptyHeart"){
+      console.log("inside if stat")
+      //elem represents p element
+      var elem = pelem.childNodes[1].parentNode;
+      elem.parentNode.removeChild(elem);
+      console.log("removed " + i)
+    }else{
+      index++;
+    }
+  console.log(i)
+  }
+}
+//when enter key is pressed submit the input
+function detectEnter(e){
+  var code = (e.keyCode ? e.keyCode : e.which);
+  if (code == 13){
+    search();
+  }
+}
+//clears the all quotes that are displayed
+function clearBox(mainQuotes){
+    document.getElementById(mainQuotes).innerHTML = "";
 }
